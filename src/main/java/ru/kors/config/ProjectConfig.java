@@ -9,10 +9,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.kors.repository.UserRepository;
 import ru.kors.security.services.SimpleUser;
 
 @Configuration
 public class ProjectConfig{
+    private final UserRepository userRepository;
+
+    public ProjectConfig(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -25,8 +31,15 @@ public class ProjectConfig{
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         var userDetailsService = new InMemoryUserDetailsManager();
-        var user1 = new SimpleUser("anton", passwordEncoder.encode("12345"));
-        userDetailsService.createUser(user1);
+
+        var user1 = userRepository.findByUsername("user");
+        var user2 = userRepository.findByUsername("admin");
+        var user3 = userRepository.findByUsername("disabled");
+
+        userDetailsService.createUser(new SimpleUser(user1));
+        userDetailsService.createUser(new SimpleUser(user2));
+        userDetailsService.createUser(new SimpleUser(user3));
+
         return userDetailsService;
     }
 
