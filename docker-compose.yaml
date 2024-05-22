@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:15.2
+    environment:
+      - POSTGRES_DB=spring_boot_security
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - 5435:5432
+    restart: always
