@@ -7,10 +7,10 @@ import ru.kors.models.MyUser;
 import java.util.Collection;
 import java.util.List;
 
-public class SimpleUser implements UserDetails {
+public class SecurityUser implements UserDetails {
     private final MyUser myUser;
 
-    public SimpleUser(MyUser myUser) {
+    public SecurityUser(MyUser myUser) {
         this.myUser = myUser;
     }
 
