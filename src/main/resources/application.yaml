@@ -8,12 +8,16 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     database: postgresql
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
 
 server:
   port: 8200
