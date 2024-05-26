@@ -7,21 +7,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.kors.models.MyUser;
 import ru.kors.security.services.InMemoryUserDetailsService;
 import ru.kors.security.services.SecurityUser;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 public class ProjectConfig{
@@ -49,18 +43,8 @@ public class ProjectConfig{
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() throws NoSuchAlgorithmException {
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-
-        encoders.put("sha256", new StandardPasswordEncoder("secret"));
-        encoders.put("bcrypt", new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2B,
-                SecureRandom.getInstanceStrong()));
-        encoders.put("scrypt", new SCryptPasswordEncoder(
-                16384, 8, 1, 32, 64
-        ));
-
-
-        return new DelegatingPasswordEncoder("bcrypt", encoders);
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
 
