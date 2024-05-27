@@ -14,7 +14,6 @@ import ru.kors.models.MyUser;
 import ru.kors.security.services.InMemoryUserDetailsService;
 import ru.kors.security.services.SecurityUser;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Configuration
