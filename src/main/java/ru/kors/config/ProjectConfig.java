@@ -1,7 +1,5 @@
 package ru.kors.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -9,16 +7,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.kors.models.MyUser;
-import ru.kors.security.services.InMemoryUserDetailsService;
-import ru.kors.security.services.SecurityUser;
 
-import java.util.List;
+import javax.sql.DataSource;
 
 @Configuration
-public class ProjectConfig{
-    private final Logger logger = LoggerFactory.getLogger(ProjectConfig.class);
+public class ProjectConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -29,16 +24,24 @@ public class ProjectConfig{
     }
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        var user = new MyUser(1L, "anton",
-                passwordEncoder.encode("password")
-                , "USER");
+    public UserDetailsService userDetailsService(DataSource dataSource) {
+        String usersByUsernameQuery = """
+            select us.username, us.password, us.enabled
+            from spring.users us
+            where us.username = ?;
+            """;
+        String authsByUserQuery = """
+            select ats.username, ats.authority
+            from spring.authorities ats
+            where ats.username = ?
+            """;
 
-        logger.info("User encoded password: {}", user.getPassword());
+        var udm = new JdbcUserDetailsManager(dataSource);
+        udm.setUsersByUsernameQuery(usersByUsernameQuery);
+        udm.setAuthoritiesByUsernameQuery(authsByUserQuery);
 
-        return new InMemoryUserDetailsService(List.of(
-                new SecurityUser(user)
-        ));
+        return udm;
+
     }
 
     @Bean
